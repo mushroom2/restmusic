@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework.authtoken import views as drf_views
 from restmus import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/users', views.UserCreate.as_view(), name='account-create')
+    path('api/users', views.UserCreate.as_view(), name='account-create'),
+    path('api/auth$', drf_views.obtain_auth_token, name='auth'),
 ]
