@@ -14,12 +14,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
+from django.views.generic import TemplateView
 from rest_framework.authtoken import views as drf_views
 from restmus import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/users', views.UserCreate.as_view(), name='account-create'),
-    path('api/auth$', drf_views.obtain_auth_token, name='auth'),
+    path('api/auth', drf_views.obtain_auth_token, name='auth'),
+    path('api/tracks', views.TrackCreate.as_view(), name='track-create'),
+    re_path(r'^.*/', TemplateView.as_view(template_name='frontend/index.html')),
+    path('', TemplateView.as_view(template_name='frontend/index.html')),
 ]
