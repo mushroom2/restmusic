@@ -5,7 +5,7 @@ import re
 from datetime import datetime
 
 def name_format(name):
-    return re.sub(r'[/]+', '', name)
+    return re.sub(r'[/.:]+', '', name)
 
 
 def download_from_youtuve(url):
@@ -13,6 +13,7 @@ def download_from_youtuve(url):
     try:
         yt = YouTube(url)
         songname = name_format(yt.title)
+        fformat = f'.{yt.streams.first().subtype}'
         yt.streams.first().download(output_path=bp)
     except Exception as e:
         res = {
@@ -25,9 +26,13 @@ def download_from_youtuve(url):
     # todo add provide django logger
     print('downloaded')
     downloaded_p = os.path.join(bp, '{sname}'.format(sname=songname))
+    scripts = {
+        '.mp4': 'mp4tomp3.sh',
+        '.webm': 'webmtomp3.sh'
+    }
 
     # if video not exists return err
-    if not os.path.isfile(downloaded_p + '.mp4'):
+    if not os.path.isfile(downloaded_p + fformat):
         res = {
             'status': 'not ok',
             'timestamp': datetime.now(),
@@ -36,18 +41,18 @@ def download_from_youtuve(url):
         return res
 
     # run bash scrip to convert mp4 to mp3
-    script_p = os.path.join(bp, 'mp4tomp3.sh')
+    script_p = os.path.join(bp, scripts[fformat])
     sub = Popen([f'{script_p} "{downloaded_p}"'], shell=True, stdout=PIPE)
     sub.communicate()
 
     # remove downloaded video
-    os.remove(downloaded_p + '.mp4')
+    os.remove(downloaded_p + fformat)
     res = {
         'status': 'ok',
         'songname': songname,
         'hash': hash(songname),
         'timestamp': datetime.now(),
-        'path': downloaded_p + '.mp3',
+        'path': '/static/' + songname + '.mp3',
         'err': None
     }
     return res
