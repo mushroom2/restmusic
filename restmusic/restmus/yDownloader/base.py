@@ -5,7 +5,7 @@ import re
 from datetime import datetime
 
 def name_format(name):
-    return re.sub(r'[/.:]+', '', name)
+    return re.sub(r'[/.:\\"\*\?<>\|\+\']+', '', name)
 
 
 def download_from_youtuve(url):

@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import ReactAudioPlayer from 'react-audio-player';
 import Axios from 'axios';
+import {connect} from "react-redux";
+import {setTracks} from "../../../actions/actions";
 
 class TLD extends Component {
     constructor(props){
@@ -10,14 +12,25 @@ class TLD extends Component {
         };
         this.inputChange = this.inputChange.bind(this);
         this.inputSubmit = this.inputSubmit.bind(this);
+        this.tracksChange = this.tracksChange.bind(this)
     }
     inputChange(e){
+        console.log(this.state);
         this.setState({track: e.target.value})
+    }
+
+    tracksChange(track){
+        let trgt = this.props.tracks.slice();
+        trgt.push(track);
+        this.props.setTracksAction(trgt)
     }
 
     inputSubmit(e){
         Axios.post('/api/tracks', {'url': this.state.track}, {headers: {'Content-Type': 'application/json'}})
-            .then((resp) => {console.log(resp)})
+            .then((resp) => {
+                console.log(resp);
+                this.tracksChange(resp.data)
+            })
             .catch((err) => console.log('err when track add', err));
         e.preventDefault();
     }
@@ -53,4 +66,21 @@ class TLD extends Component {
     }
 }
 
-export default TLD
+const mapStateToProps = store => {
+  console.log(store);
+  return {
+    tracks: store.tracks,
+  }
+};
+
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setTracksAction: tracks => dispatch(setTracks(tracks))
+  }
+};
+
+
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(TLD);

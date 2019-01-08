@@ -8,6 +8,12 @@ import Base from './components/base'
 import MyRoute from './components/main'
 import AuthComp from './components/auth'
 import { BrowserRouter } from 'react-router-dom';
+import {store} from '../store'
+import { Provider } from 'react-redux'
+
+
+
+
 class App extends React.Component {
   render () {
     return (
@@ -19,4 +25,10 @@ class App extends React.Component {
   }
 }
 
-ReactDOM.render(<BrowserRouter><App /></BrowserRouter>, document.getElementById('react-app'));
+ReactDOM.render(
+    <Provider store={store}>
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+    </Provider>, document.getElementById('react-app')
+);
